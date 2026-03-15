@@ -19,3 +19,5 @@ public interface DemoClient {
 
     //la conversione da Json (in arrivo dopo la chiamata) a DTO sarà realizzata da Spring
 }
+
+//In Spring, i feign client vengono utilizzati per implementare un tipo di comunicazione sincrona
