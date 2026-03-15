@@ -8,6 +8,8 @@ import com.example.demo.DTO.EsitDTO;
 import com.example.demo.Enums.MessaggioDaControllare;
 import com.example.demo.mapper.IncomingMessageMapper;
 import com.example.demo.repository.ObjectRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ public class CheckService {
     private final ObjectRepository objectRepository;
 
     private final IncomingMessageMapper incomingMessageMapper;
+
+    private final Logger logger = LoggerFactory.getLogger(CheckService.class);
 
     @Autowired
     public CheckService(ObjectRepository objectRepository, IncomingMessageMapper incomingMessageMapper) {
@@ -40,8 +44,12 @@ public class CheckService {
     public EsitDTO addMessage(PostIncomingMessageDTO postIncomingMessageDTO) {
 
         IncomingMessage IM = incomingMessageMapper.toIncomingMessage(postIncomingMessageDTO);
-
-        objectRepository.save(IM);
+        try {
+            objectRepository.save(IM);
+        } catch (Exception e) {
+            logger.error("Errore nell'aggiunta dell'elemento", e);
+            throw new RuntimeException(e);
+        }
         return new PositiveEsitDTO("Messaggio salvato in memoria");
     }
 
@@ -52,7 +60,12 @@ public class CheckService {
 
         if(MDC.isPresent()) {
 
-            objectRepository.deleteById(id);
+            try {
+                objectRepository.deleteById(id);
+            } catch (Exception e) {
+                logger.error("Errore nell'eliminazione dell'elemento", e);
+                throw new RuntimeException(e);
+            }
             return new PositiveEsitDTO("Elemento "+id+ " rimosso dalla memoria");
         }
 

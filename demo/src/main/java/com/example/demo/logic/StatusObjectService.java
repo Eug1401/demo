@@ -2,6 +2,7 @@ package com.example.demo.logic;
 
 import com.example.demo.DTO.*;
 import com.example.demo.Entity.StatusObject;
+import com.example.demo.Enums.Operazione;
 import com.example.demo.feign.DemoClient;
 import com.example.demo.mapper.StatusObjectMapper;
 import com.example.demo.repository.StatusObjectRepository;
@@ -15,6 +16,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,35 +31,48 @@ public class StatusObjectService {
 
     private final DemoClient demoClient;
 
+    private final  KafkaService kafkaService;
+
+
     @Autowired
-    StatusObjectService(StatusObjectRepository statusObjectRepository, StatusObjectMapper statusObjectMapper, DemoClient demoClient) {
+    StatusObjectService(StatusObjectRepository statusObjectRepository, StatusObjectMapper statusObjectMapper, DemoClient demoClient, KafkaService kafkaService) {
         this.statusObjectRepository = statusObjectRepository;
         this.statusObjectMapper = statusObjectMapper;
         this.demoClient = demoClient;
+        this.kafkaService = kafkaService;
     }
 
 
     @CacheEvict(value = "StatusObjectCache", key = "'all'")
-    @Transactional
     public EsitDTO addStatusObject(PostStatusObjectDTO statusObjectDTO) {
 
         StatusObject SO = statusObjectMapper.toEntity(statusObjectDTO);
 
-        statusObjectRepository.save(SO);
+        try {
+            statusObjectRepository.save(SO);
+        } catch (Exception e) {
+            logger.error("Errore nell'aggiunta dell'elemento", e);
+            throw new RuntimeException(e);
+        }
 
         try {
-            demoClient.addElement();
+            logger.info("Invio notifica http al feign client in corso... (EVENTO CREATED)");
+            demoClient.sendNotify(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.CREATED, LocalDateTime.now()));  //invio notifica tramite http request al feign client
+            logger.info("Ripresa attività del servizio demo dopo invio della notifica al feign client. (EVENTO CREATED)");
         } catch (FeignException e) {
-            logger.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+            logger.error("Errore nella chiamata al feign", e);
         }
+
+        logger.info("Invio messaggio al listener in corso... (EVENTO CREATED)");
+        kafkaService.sendMessage(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.CREATED, LocalDateTime.now()));   //invio messaggio tramite kafka al listener
+
+        logger.info("Ripresa attività del servizio demo dopo invio del messaggio kafka al listener. (EVENTO CREATED)");
 
         return new PositiveEsitDTO("Status object salvato");
     }
 
 
     @CacheEvict(value = "StatusObjectCache", key = "'all'")  //pulisce la cache se viene aggiornata la lista, in modo che verrà ricaricata dal db alla prossima get
-    @Transactional
     public EsitDTO modifyStatusObject (PutStatusObjectDTO PSO) {
 
         Optional<StatusObject> statusObject = statusObjectRepository.findById(PSO.getCodiceIdentificativo());
@@ -67,14 +82,25 @@ public class StatusObjectService {
 
             statusObjectMapper.updateStatusObjectFromPutStatusObjectDTO(PSO, SO);
 
-            statusObjectRepository.save(SO);
+            try {
+                statusObjectRepository.save(SO);
+            } catch (Exception e) {
+                logger.error("Errore nell'aggiornamento dell'elemento", e);
+                throw new RuntimeException(e);
+            }
 
             try {
-                demoClient.putElement();
-            } catch (FeignException e) {
-                logger.error(e.getMessage());
-                throw new RuntimeException(e.getMessage());
+                logger.info("Invio notifica http al feign client in corso... (EVENTO UPDATE)");
+                demoClient.sendNotify(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.UPDATE, LocalDateTime.now()));  //invio notifica tramite http request al feign client
+                logger.info("Ripresa attività del servizio demo dopo invio della notifica al feign client. (EVENTO UPDATE)");
+            }  catch (FeignException e) {
+                logger.error("Errore nella chiamata al feign", e);
             }
+
+            logger.info("Invio messaggio al listener in corso... (EVENTO UPDATE)");
+            kafkaService.sendMessage(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.UPDATE, LocalDateTime.now()));  //invio messaggio tramite kafka al listener
+
+            logger.info("Ripresa attività del servizio demo dopo invio del messaggio kafka al listener. (EVENTO UPDATE)");
 
             return new PositiveEsitDTO("Stato dell'oggetto: "+SO.getCodiceIdentificativo()+ " aggiornato");
         } else {

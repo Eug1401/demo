@@ -1,24 +1,37 @@
 package com.example.client.logic;
 
-import com.example.client.component.StateTable;
+import com.example.client.entity.Notify;
+import com.example.client.repository.NotifyRepository;
 import lombok.Getter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Getter
 @Service
 public class StatusObjectService {
 
-    private final StateTable stateTable;
+    private final NotifyRepository notifyRepository;
 
-    public StatusObjectService(StateTable stateTable) {
-        this.stateTable = stateTable;
+    private final Logger logger = LoggerFactory.getLogger(StatusObjectService.class);
+
+    StatusObjectService(NotifyRepository notifyRepository) {
+        this.notifyRepository = notifyRepository;
     }
 
-    public void addElementInTable() {
-        stateTable.addElement();
-    }
+    public void saveNotify(Notify notify) {
+        try {
+            logger.info("Notifica ricevuta. Salvataggio in corso...");
 
-    public void putStateTable() {
-        stateTable.putElement();
+            // simulazione di operazione prolungata
+            Thread.sleep(5000);
+
+            notifyRepository.save(notify);
+
+            logger.info("Notifica salvata.");
+        } catch (Exception e) {
+            logger.error("Errore durante il salvataggio della notifica", e);
+            throw new RuntimeException("Impossibile salvare la notifica", e);
+        }
     }
 }

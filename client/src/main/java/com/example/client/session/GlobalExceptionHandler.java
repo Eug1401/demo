@@ -1,4 +1,4 @@
-package com.example.demo.session;
+package com.example.client.session;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
