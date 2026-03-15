@@ -42,12 +42,18 @@ public class StatusObjectService {
         this.kafkaService = kafkaService;
     }
 
+    //NOTA: eventuali modifiche e messaggi inviati al client o al listener non influenzano la scrittura su DB
+    //eventuali fallimenti nelle due operazioni descritte, non porteranno quindi ad una rollback
+    //tale implementazione ha infatti come unico scopo il test delle meccaniche feign client e kafka message
+
 
     @CacheEvict(value = "StatusObjectCache", key = "'all'")
     public EsitDTO addStatusObject(PostStatusObjectDTO statusObjectDTO) {
 
         StatusObject SO = statusObjectMapper.toEntity(statusObjectDTO);
 
+
+        //salvataggio su DB
         try {
             statusObjectRepository.save(SO);
         } catch (Exception e) {
@@ -55,6 +61,8 @@ public class StatusObjectService {
             throw new RuntimeException(e);
         }
 
+
+        //invio notifica al feign client
         try {
             logger.info("Invio notifica http al feign client in corso... (EVENTO CREATED)");
             demoClient.sendNotify(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.CREATED, LocalDateTime.now()));  //invio notifica tramite http request al feign client
@@ -63,6 +71,8 @@ public class StatusObjectService {
             logger.error("Errore nella chiamata al feign", e);
         }
 
+
+        //invio messaggio al listener
         logger.info("Invio messaggio al listener in corso... (EVENTO CREATED)");
         kafkaService.sendMessage(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.CREATED, LocalDateTime.now()));   //invio messaggio tramite kafka al listener
 
@@ -82,6 +92,8 @@ public class StatusObjectService {
 
             statusObjectMapper.updateStatusObjectFromPutStatusObjectDTO(PSO, SO);
 
+
+            //salvataggio modifica su DB
             try {
                 statusObjectRepository.save(SO);
             } catch (Exception e) {
@@ -89,6 +101,7 @@ public class StatusObjectService {
                 throw new RuntimeException(e);
             }
 
+            //invio notifica al feign client
             try {
                 logger.info("Invio notifica http al feign client in corso... (EVENTO UPDATE)");
                 demoClient.sendNotify(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.UPDATE, LocalDateTime.now()));  //invio notifica tramite http request al feign client
@@ -97,6 +110,7 @@ public class StatusObjectService {
                 logger.error("Errore nella chiamata al feign", e);
             }
 
+            //invio messaggio al listener
             logger.info("Invio messaggio al listener in corso... (EVENTO UPDATE)");
             kafkaService.sendMessage(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.UPDATE, LocalDateTime.now()));  //invio messaggio tramite kafka al listener
 
