@@ -46,7 +46,6 @@ public class StatusObjectService {
     //eventuali fallimenti nelle due operazioni descritte, non porteranno quindi ad una rollback
     //tale implementazione ha infatti come unico scopo il test delle meccaniche feign client e kafka message
 
-
     @CacheEvict(value = "StatusObjectCache", key = "'all'")
     public EsitDTO addStatusObject(PostStatusObjectDTO statusObjectDTO) {
 
@@ -62,10 +61,12 @@ public class StatusObjectService {
         }
 
 
+        NotifyDTO notify = new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.CREATED, LocalDateTime.now());
+
         //invio notifica al feign client
         try {
             logger.info("Invio notifica http al feign client in corso... (EVENTO CREATED)");
-            demoClient.sendNotify(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.CREATED, LocalDateTime.now()));  //invio notifica tramite http request al feign client
+            demoClient.sendNotify(notify);  //invio notifica tramite http request al feign client
             logger.info("Ripresa attività del servizio demo dopo invio della notifica al feign client. (EVENTO CREATED)");
         } catch (FeignException e) {
             logger.error("Errore nella chiamata al feign", e);
@@ -74,7 +75,7 @@ public class StatusObjectService {
 
         //invio messaggio al listener
         logger.info("Invio messaggio al listener in corso... (EVENTO CREATED)");
-        kafkaService.sendMessage(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.CREATED, LocalDateTime.now()));   //invio messaggio tramite kafka al listener
+        kafkaService.sendMessage(notify);   //invio messaggio tramite kafka al listener
 
         logger.info("Ripresa attività del servizio demo dopo invio del messaggio kafka al listener. (EVENTO CREATED)");
 
@@ -130,6 +131,4 @@ public class StatusObjectService {
         return statusObjectRepository.findAll().stream()
                 .map(statusObjectMapper::toGetStatusObject).toList();  //mappa elementi trovati nel findAll in elementi toGetStatusObject e costruisce una lista
     }
-
-
 }

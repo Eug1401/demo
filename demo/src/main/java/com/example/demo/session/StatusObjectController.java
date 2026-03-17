@@ -6,6 +6,8 @@ import com.example.demo.DTO.PostStatusObjectDTO;
 import com.example.demo.DTO.PutStatusObjectDTO;
 import com.example.demo.Entity.StatusObject;
 import com.example.demo.logic.StatusObjectService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,17 +23,25 @@ public class StatusObjectController {
     }
 
     @PostMapping("/add")
-    public EsitDTO addStatusObject(@RequestBody PostStatusObjectDTO statusObject){
-        return statusObjectService.addStatusObject(statusObject);
+    public ResponseEntity<EsitDTO> addStatusObject(@RequestBody PostStatusObjectDTO statusObject){
+        return ResponseEntity.ok(statusObjectService.addStatusObject(statusObject));
     }
 
     @PutMapping("/put")
-    public EsitDTO putStatusObject(@RequestBody PutStatusObjectDTO statusObjectDTO) {
-        return statusObjectService.modifyStatusObject(statusObjectDTO);
+    public ResponseEntity<EsitDTO> putStatusObject(@RequestBody PutStatusObjectDTO statusObjectDTO) {
+        EsitDTO esit = statusObjectService.modifyStatusObject(statusObjectDTO);
+
+        return switch (esit.getEsito()) {
+            case POSITIVO -> ResponseEntity.ok(esit);
+            case NEGATIVO ->
+                    ResponseEntity                //.modifyStatusObject() restituisce un caso NEGATIVO se non trova l'oggetto da aggiornare
+                            .status(HttpStatus.NOT_FOUND)
+                            .body(esit);
+        };
     }
 
     @GetMapping("/getAllStatusObject")
-    public List<GetStatusObjectDTO> getAll() {
-        return statusObjectService.getAllStatusObject();
+    public ResponseEntity<List<GetStatusObjectDTO>> getAll() {
+        return ResponseEntity.ok(statusObjectService.getAllStatusObject());
     }
 }
