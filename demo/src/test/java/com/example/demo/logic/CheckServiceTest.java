@@ -53,6 +53,8 @@ public class CheckServiceTest {
         EsitDTO obteined = checkService.addMessage(message);   //OUTPUT DEL METODO TA TESTARE RISPETTO ALL'INPUT PASSATO
 
         //OUTPUT DEL METODO ED OUTPUT ATTESO DEVONO COINCIDERE
+        //Assertions.assertEquals(atteso, reale);
+        //Assertions controlla se i due valori sono uguali
         Assertions.assertEquals(esito.getEsito(), obteined.getEsito());  //le asserzioni servono a verificare che il risultato sia quello atteso
     }
 

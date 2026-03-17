@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectReader;
 
@@ -32,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest  //“Avvia tutto il contesto dell’applicazione, quasi come se stessi accendendo davvero il progetto.”
 @AutoConfigureMockMvc      //fa creare a spring il bean MockMvc
 @Testcontainers  //Abilitazione dei Testcontainers
+@ActiveProfiles("test") //usiamo properties di test (vi viene definito un DB di test)
 class DemoApplicationTests {
 
 	@Autowired
@@ -42,22 +45,6 @@ class DemoApplicationTests {
 
 	@Autowired
 	private ObjectMapper objectMapper;  //Serve per convertire un oggetto Java in JSON.
-
-	//creazione container di test
-	static PostgreSQLContainer<?> myPostgreContainer = new PostgreSQLContainer<>("postgres:latest");
-
-	//ottengo proprietà DB dal container e le imposto dinamicamente
-	@DynamicPropertySource
-	static void configureProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.datasource.url", myPostgreContainer::getJdbcUrl);
-		registry.add("spring.datasource.username", myPostgreContainer::getUsername);
-		registry.add("spring.datasource.password", myPostgreContainer::getPassword);
-	}
-
-	@BeforeAll
-	static void beforeAll() {
-		myPostgreContainer.start(); //devo dire di avviare il contenitore prima degli altri metodi di test, verrà usato DB di test
-	}
 
 
 	@BeforeEach
