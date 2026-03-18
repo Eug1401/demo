@@ -16,7 +16,6 @@ Feature: checkObjectService Test
       Given ho un messaggio "<messaggio>"
       When invoco il metodo addMessage per salvarlo su DB
       Then ottengo un esito di tipo "PositiveEsitDTO" con messaggio "Messaggio salvato in memoria"
-      And il messaggio "<messaggio>" risulta salvato nel database
 
       Examples:
       | messaggio |

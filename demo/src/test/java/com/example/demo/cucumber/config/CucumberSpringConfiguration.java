@@ -21,5 +21,5 @@ public class CucumberSpringConfiguration {
 }
 
 
-// La runner: fa partire Cucumber
+//La runner: fa partire Cucumber
 //La config Spring: collega Cucumber a Spring Boot

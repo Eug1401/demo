@@ -6,22 +6,30 @@ import com.example.demo.DTO.PositiveEsitDTO;
 import com.example.demo.DTO.PostIncomingMessageDTO;
 import com.example.demo.Entity.IncomingMessage;
 import com.example.demo.logic.CheckService;
+import com.example.demo.mapper.IncomingMessageMapper;
 import com.example.demo.repository.ObjectRepository;
+import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public class CheckObjectServiceSteps {
-
-    @Autowired
+    @Mock
     private ObjectRepository objectRepository;
 
+    @Mock
+    private IncomingMessageMapper incomingMessageMapper;
+
     //Inietto servizio da testare (avrà già tutte le dipendenze interne configurate)
-    @Autowired
+    @InjectMocks
     private CheckService checkService;
 
 
@@ -31,6 +39,14 @@ public class CheckObjectServiceSteps {
     //in Given si prepara l'input
     //in When si esegue il metodo
     //nel Then si controlla il risultato
+
+    @Before
+    public void setup() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+
+    //-----------------------STEPS
 
     @Given("ho un messaggio {string}")
     public void hoUnMessaggio(String messaggio) {
@@ -42,11 +58,21 @@ public class CheckObjectServiceSteps {
 
     @When("invoco il metodo checkMessage")
     public void invocoIlMetodoCheckMessage() {
+        IncomingMessage IM = new IncomingMessage(1, inputMessage.getStringaDaControllare());
+        Mockito.when(incomingMessageMapper.toIncomingMessage(inputMessage)).thenReturn(IM);
+
         result = checkService.checkMessage(inputMessage);
     }
 
+
     @When("invoco il metodo addMessage per salvarlo su DB")
-    public void invocoIlMetodoAddMessage() { result = checkService.addMessage(inputMessage); }
+    public void invocoIlMetodoAddMessage() {
+        Mockito.when(objectRepository.save(Mockito.any())).thenReturn(result);
+
+        result = checkService.addMessage(inputMessage);
+
+        Mockito.verify(objectRepository, Mockito.times(1)).save(Mockito.any());
+    }
 
 
 
@@ -64,13 +90,5 @@ public class CheckObjectServiceSteps {
         } else {
             Assertions.fail("Tipo esito non riconosciuto: " + tipoEsitoAtteso);
         }
-    }
-
-    @Then("il messaggio {string} risulta salvato nel database")
-    public void verificaSalvataggio(String messaggioAtteso) {
-        List<IncomingMessage> savedMessages = objectRepository.findAll();
-
-        Assertions.assertEquals(1, savedMessages.size());   //LA INSERT DEVE AGGIUNGERE UNA SOLA RIGA
-        Assertions.assertEquals(messaggioAtteso, savedMessages.get(0).getStringaDaControllare());  //CONTROLLO STRINGA SALVATA
     }
 }

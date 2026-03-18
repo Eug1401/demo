@@ -3,6 +3,7 @@ package com.example.demo.cucumber.config;
 import com.example.demo.repository.ObjectRepository;
 import com.example.demo.repository.StatusObjectRepository;
 import io.cucumber.java.Before;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CucumberHooks { //mette a disposizione una serie di metodi automatici eseguiti prima/dopo i test
@@ -17,5 +18,5 @@ public class CucumberHooks { //mette a disposizione una serie di metodi automati
     public void cleanDatabase() {
         objectRepository.deleteAll();
         statusObjectRepository.deleteAll();
-    }  //parte prima di ogni esecuzione
+    }  //parte prima di ogni esecuzione (pulizia database)
 }
