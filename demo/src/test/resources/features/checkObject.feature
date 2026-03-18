@@ -1,24 +1,14 @@
-Feature: checkObjectService Test
-  Questa feature testa il metodo checkMessage
+Feature: Salvataggio di un messaggio
 
-  Scenario Outline: controllo di un messaggio
-    Given ho un messaggio "<messaggio>"
-    When invoco il metodo checkMessage
-    Then ottengo un esito di tipo "<tipoEsito>" con messaggio "<messaggioAtteso>"
+  Scenario Outline: Salvataggio corretto di un messaggio
+    Given ho una stringa "<messaggio>" da salvare
+    When invio una POST a "/add"
+    Then la risposta HTTP ha codice 200
+    And ottengo un esito di tipo POSITIVO con messaggio "Messaggio salvato in memoria"
+    And nel database esiste un messaggio con stringa "<messaggio>"
 
     Examples:
-      | messaggio | tipoEsito        | messaggioAtteso                                          |
-      | ciao      | PositiveEsitDTO  | Il messaggio inviato risulta corretto                    |
-      | hello     | NegativeEsitDTO  | Il messaggio inviato non coincide con quello nel sistema |
-
-
-    Scenario Outline: salvataggio corretto di un messaggio
-      Given ho un messaggio "<messaggio>"
-      When invoco il metodo addMessage per salvarlo su DB
-      Then ottengo un esito di tipo "PositiveEsitDTO" con messaggio "Messaggio salvato in memoria"
-
-      Examples:
-      | messaggio |
-      | ciao      |
-      | palla     |
-      | pollo     |
+    | messaggio |
+    | ciao      |
+    | prova     |
+    | test      |

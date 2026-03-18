@@ -17,5 +17,6 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")  //pretty serve a migliorare il modo in cui un test viene visualizzato a schermo
 public class CucumberTestRunner {
 
+
     //La classe è vuota perché tutta la configurazione è nelle annotazioni.
 }
