@@ -23,13 +23,17 @@ public class StatusObjectService {
         try {
             logger.info("Notifica ricevuta. Salvataggio in corso...");
 
-            // simulazione di operazione prolungata
+            // Simula un'elaborazione lenta per osservare il comportamento sincrono/asincro
             Thread.sleep(5000);
 
             notifyRepository.save(notify);
 
             logger.info("Notifica salvata.");
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Thread interrotto durante l'attesa simulata", e);
+            throw new RuntimeException("Operazione interrotta", e);
+        }catch (Exception e) {
             logger.error("Errore durante il salvataggio della notifica", e);
             throw new RuntimeException("Impossibile salvare la notifica", e);
         }
