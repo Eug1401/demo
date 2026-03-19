@@ -24,5 +24,4 @@ public class GlobalExceptionHandler {
                 .body(new NegativeEsitDTO("Errore nell'eliminazione dell'oggetto dal DB:"+ e));
     }
 
-
 }
