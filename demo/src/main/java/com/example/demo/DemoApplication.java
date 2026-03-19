@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableScheduling    //permette implementazione di scheduling
-@EnableTransactionManagement  //permette pissibilità di definire transazioni
 @EnableFeignClients
 public class DemoApplication {
 

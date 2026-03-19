@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: listener-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: listener-app
+  template:
+    metadata:
+      labels:
+        app: listener-app
+    spec:
+      containers:
+        - name: listener-app
+          image: root-listener1:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: KAFKA_BOOTSTRAP_SERVERS
+            - name: KAFKA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: KAFKA_USERNAME
+            - name: KAFKA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: KAFKA_PASSWORD
+            - name: KAFKA_TRUSTSTORE_LOCATION
+              value: "/app/kafka.truststore.jks"
+            - name: KAFKA_TRUSTSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secret
+                  key: KAFKA_TRUSTSTORE_PASSWORD
+          volumeMounts:
+            - name: kafka-truststore-volume
+              mountPath: /app/kafka.truststore.jks
+              subPath: kafka.truststore.jks
+              readOnly: true
+      volumes:
+        - name: kafka-truststore-volume
+          secret:
+            secretName: kafka-truststore

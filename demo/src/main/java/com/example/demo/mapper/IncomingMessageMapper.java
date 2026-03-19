@@ -1,6 +1,6 @@
 package com.example.demo.mapper;
 
-import com.example.demo.DTO.PostIncomingMessageDTO;
+import com.example.demo.dto.PostIncomingMessageDTO;
 import com.example.demo.Entity.IncomingMessage;
 import org.mapstruct.Mapper;
 

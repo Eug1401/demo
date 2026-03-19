@@ -1,9 +1,8 @@
 package com.example.demo.logic;
 
-import com.example.demo.DTO.EsitDTO;
-import com.example.demo.DTO.PositiveEsitDTO;
-import com.example.demo.DTO.PostIncomingMessageDTO;
-import com.example.demo.DTO.PostStatusObjectDTO;
+import com.example.demo.dto.EsitDTO;
+import com.example.demo.dto.PositiveEsitDTO;
+import com.example.demo.dto.PostIncomingMessageDTO;
 import com.example.demo.Entity.IncomingMessage;
 import com.example.demo.mapper.IncomingMessageMapper;
 import com.example.demo.repository.ObjectRepository;

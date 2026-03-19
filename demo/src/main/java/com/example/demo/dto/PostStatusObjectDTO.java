@@ -1,9 +1,5 @@
-package com.example.demo.DTO;
+package com.example.demo.dto;
 
-import com.example.demo.Enums.Stato;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

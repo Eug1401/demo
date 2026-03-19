@@ -1,14 +1,11 @@
 package com.example.demo.session;
 
-import com.example.demo.DTO.PostIncomingMessageDTO;
-import com.example.demo.Entity.IncomingMessage;
-import com.example.demo.DTO.EsitDTO;
+import com.example.demo.dto.PostIncomingMessageDTO;
+import com.example.demo.dto.EsitDTO;
 import com.example.demo.logic.CheckService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/message")

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client-app
+  template:
+    metadata:
+      labels:
+        app: client-app
+    spec:
+      containers:
+        - name: client-app
+          image: root-client-app:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_URL
+              value: "jdbc:postgresql://ep-misty-morning-a9ftkdrx-pooler.gwc.azure.neon.tech/demodb?sslmode=require&channelBinding=require"
+            - name: DB_USERNAME
+              value: "neondb_owner"
+            - name: DB_PASSWORD
+              value: "npg_CV2tTx4ElFhf"
+            - name: SERVER_PORT
+              value: "8081"

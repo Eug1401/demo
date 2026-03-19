@@ -1,11 +1,13 @@
 package com.example.demo.logic;
 
-import com.example.demo.DTO.NegativeEsitDTO;
-import com.example.demo.DTO.PositiveEsitDTO;
-import com.example.demo.DTO.PostIncomingMessageDTO;
+import com.example.demo.dto.NegativeEsitDTO;
+import com.example.demo.dto.PositiveEsitDTO;
+import com.example.demo.dto.PostIncomingMessageDTO;
 import com.example.demo.Entity.IncomingMessage;
-import com.example.demo.DTO.EsitDTO;
+import com.example.demo.dto.EsitDTO;
 import com.example.demo.Enums.MessaggioDaControllare;
+import com.example.demo.exception.DeleteException;
+import com.example.demo.exception.SaveException;
 import com.example.demo.mapper.IncomingMessageMapper;
 import com.example.demo.repository.ObjectRepository;
 import org.slf4j.Logger;
@@ -30,6 +32,8 @@ public class CheckService {
         this.incomingMessageMapper = incomingMessageMapper;
     }
 
+
+
     public EsitDTO checkMessage(PostIncomingMessageDTO IR)
     {
         IncomingMessage IM = incomingMessageMapper.toIncomingMessage(IR);
@@ -41,6 +45,7 @@ public class CheckService {
     }
 
 
+
     public EsitDTO addMessage(PostIncomingMessageDTO postIncomingMessageDTO) {
 
         IncomingMessage IM = incomingMessageMapper.toIncomingMessage(postIncomingMessageDTO);
@@ -48,10 +53,11 @@ public class CheckService {
             objectRepository.save(IM);
         } catch (Exception e) {
             logger.error("Errore nell'aggiunta dell'elemento", e);
-            throw new RuntimeException(e);
+            throw new SaveException("Errore nell'aggiunta dell'elemento", e);
         }
         return new PositiveEsitDTO("Messaggio salvato in memoria");
     }
+
 
 
     public EsitDTO deleteById (Long id) {
@@ -64,7 +70,7 @@ public class CheckService {
                 objectRepository.deleteById(id);
             } catch (Exception e) {
                 logger.error("Errore nell'eliminazione dell'elemento", e);
-                throw new RuntimeException(e);
+                throw new DeleteException("Errore nell'eliminazione dell'elemento", e);
             }
             return new PositiveEsitDTO("Elemento "+id+ " rimosso dalla memoria");
         }

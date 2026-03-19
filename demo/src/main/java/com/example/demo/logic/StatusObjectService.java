@@ -1,20 +1,17 @@
 package com.example.demo.logic;
 
-import com.example.demo.DTO.*;
+import com.example.demo.dto.*;
 import com.example.demo.Entity.StatusObject;
 import com.example.demo.Enums.Operazione;
+import com.example.demo.exception.SaveException;
 import com.example.demo.feign.DemoClient;
 import com.example.demo.mapper.StatusObjectMapper;
 import com.example.demo.repository.StatusObjectRepository;
 import feign.FeignException;
-import feign.RetryableException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,7 +43,7 @@ public class StatusObjectService {
     //eventuali fallimenti nelle due operazioni descritte, non porteranno quindi ad una rollback
     //tale implementazione ha infatti come unico scopo il test delle meccaniche feign client e kafka message
 
-    @CacheEvict(value = "StatusObjectCache", key = "'all'")
+
     public EsitDTO addStatusObject(PostStatusObjectDTO statusObjectDTO) {
 
         StatusObject SO = statusObjectMapper.toEntity(statusObjectDTO);
@@ -57,7 +54,7 @@ public class StatusObjectService {
             statusObjectRepository.save(SO);
         } catch (Exception e) {
             logger.error("Errore nell'aggiunta dell'elemento", e);
-            throw new RuntimeException(e);
+            throw new SaveException("Errore nell'aggiunta dell'elemento", e);
         }
 
 
@@ -83,7 +80,6 @@ public class StatusObjectService {
     }
 
 
-    @CacheEvict(value = "StatusObjectCache", key = "'all'")  //pulisce la cache se viene aggiornata la lista, in modo che verrà ricaricata dal db alla prossima get
     public EsitDTO modifyStatusObject (PutStatusObjectDTO PSO) {
 
         Optional<StatusObject> statusObject = statusObjectRepository.findById(PSO.getCodiceIdentificativo());
@@ -99,7 +95,7 @@ public class StatusObjectService {
                 statusObjectRepository.save(SO);
             } catch (Exception e) {
                 logger.error("Errore nell'aggiornamento dell'elemento", e);
-                throw new RuntimeException(e);
+                throw new SaveException("Errore nell'aggiornamento dell'elemento", e);
             }
 
             //invio notifica al feign client
@@ -123,10 +119,7 @@ public class StatusObjectService {
         }
     }
 
-    //viene utilizzata entry chiamata 'all' per salvare in Redis
-    //funziona come una tabella hash
-    //l'operazione di pulizia in caso di aggiornamento deve essere realizzata sulla stessa entry
-    @Cacheable(value = "StatusObjectCache", key = "'all'") //in caso di get successive, salva in cache per velocizzare il recupero
+
     public List<GetStatusObjectDTO> getAllStatusObject() {
         return statusObjectRepository.findAll().stream()
                 .map(statusObjectMapper::toGetStatusObject).toList();  //mappa elementi trovati nel findAll in elementi toGetStatusObject e costruisce una lista

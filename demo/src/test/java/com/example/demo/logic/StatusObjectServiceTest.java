@@ -1,17 +1,15 @@
 package com.example.demo.logic;
 
-import com.example.demo.DTO.EsitDTO;
-import com.example.demo.DTO.NotifyDTO;
-import com.example.demo.DTO.PositiveEsitDTO;
-import com.example.demo.DTO.PostStatusObjectDTO;
+import com.example.demo.dto.EsitDTO;
+import com.example.demo.dto.NotifyDTO;
+import com.example.demo.dto.PositiveEsitDTO;
+import com.example.demo.dto.PostStatusObjectDTO;
 import com.example.demo.Entity.StatusObject;
-import com.example.demo.Enums.Operazione;
 import com.example.demo.Enums.Stato;
 import com.example.demo.feign.DemoClient;
 import com.example.demo.mapper.StatusObjectMapper;
 import com.example.demo.repository.StatusObjectRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,9 +17,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
-
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)

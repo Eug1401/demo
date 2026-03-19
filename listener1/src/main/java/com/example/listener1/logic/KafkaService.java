@@ -18,18 +18,9 @@ public class KafkaService {
     @KafkaListener(topics = "event", groupId = "group1")
     public void listen(NotifyDTO notifyDTO) {
 
-        try {
             log.info("Evento ricevuto, elaborazione in corso...");
 
-            // simulazione di operazione prolungata
-            Thread.sleep(5000);
-
             log.info("Operazione completata, dati ricevuti: {}", notifyDTO);
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("Thread interrotto durante la simulazione", e);
-        }
     }
     //solitamente questi metodi ritornano void e non altri oggetti
     //il loro obiettivo è la manipolazione dei dati ricevuti

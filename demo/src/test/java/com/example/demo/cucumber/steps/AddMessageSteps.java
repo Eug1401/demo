@@ -1,21 +1,15 @@
 package com.example.demo.cucumber.steps;
 
-import com.example.demo.DTO.EsitDTO;
-import com.example.demo.DTO.PostIncomingMessageDTO;
+import com.example.demo.dto.PostIncomingMessageDTO;
 import com.example.demo.Entity.IncomingMessage;
 import com.example.demo.Enums.Esito;
-import com.example.demo.cucumber.runner.CucumberTestRunner;
 import com.example.demo.repository.ObjectRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.cucumber.java.PendingException;
-import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;

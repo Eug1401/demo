@@ -1,9 +1,9 @@
 package com.example.demo.mapper;
 
-import com.example.demo.DTO.GetStatusObjectDTO;
-import com.example.demo.DTO.ResponseStatusObjectDTO;
-import com.example.demo.DTO.PostStatusObjectDTO;
-import com.example.demo.DTO.PutStatusObjectDTO;
+import com.example.demo.dto.GetStatusObjectDTO;
+import com.example.demo.dto.ResponseStatusObjectDTO;
+import com.example.demo.dto.PostStatusObjectDTO;
+import com.example.demo.dto.PutStatusObjectDTO;
 import com.example.demo.Entity.StatusObject;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

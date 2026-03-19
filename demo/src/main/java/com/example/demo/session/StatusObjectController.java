@@ -1,10 +1,9 @@
 package com.example.demo.session;
 
-import com.example.demo.DTO.EsitDTO;
-import com.example.demo.DTO.GetStatusObjectDTO;
-import com.example.demo.DTO.PostStatusObjectDTO;
-import com.example.demo.DTO.PutStatusObjectDTO;
-import com.example.demo.Entity.StatusObject;
+import com.example.demo.dto.EsitDTO;
+import com.example.demo.dto.GetStatusObjectDTO;
+import com.example.demo.dto.PostStatusObjectDTO;
+import com.example.demo.dto.PutStatusObjectDTO;
 import com.example.demo.logic.StatusObjectService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

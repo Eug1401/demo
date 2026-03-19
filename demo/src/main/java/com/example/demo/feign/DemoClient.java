@@ -1,6 +1,6 @@
 package com.example.demo.feign;
 
-import com.example.demo.DTO.NotifyDTO;
+import com.example.demo.dto.NotifyDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
