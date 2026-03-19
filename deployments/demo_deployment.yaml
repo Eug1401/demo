@@ -18,52 +18,14 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_URL
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: DB_URL
+              value: "jdbc:postgresql://postgres:5432/demodb"
             - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: DB_USERNAME
+              value: "postgres"
             - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: db-secret
-                  key: DB_PASSWORD
+              value: "postgres"
             - name: SCHEDULER_DELAY
               value: "20000"
             - name: KAFKA_BOOTSTRAP_SERVERS
-              valueFrom:
-                secretKeyRef:
-                  name: kafka-secret
-                  key: KAFKA_BOOTSTRAP_SERVERS
-            - name: KAFKA_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: kafka-secret
-                  key: KAFKA_USERNAME
-            - name: KAFKA_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: kafka-secret
-                  key: KAFKA_PASSWORD
-            - name: KAFKA_TRUSTSTORE_LOCATION
-              value: "/app/kafka.truststore.jks"
-            - name: KAFKA_TRUSTSTORE_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: kafka-secret
-                  key: KAFKA_TRUSTSTORE_PASSWORD
+              value: "kafka:9092"
             - name: SERVER_PORT
               value: "8080"
-          volumeMounts:
-            - name: kafka-truststore-volume
-              mountPath: /app/kafka.truststore.jks
-              subPath: kafka.truststore.jks
-              readOnly: true
-      volumes:
-        - name: kafka-truststore-volume
-          secret:
-            secretName: kafka-truststore

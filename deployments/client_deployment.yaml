@@ -18,10 +18,10 @@ spec:
           imagePullPolicy: IfNotPresent
           env:
             - name: DB_URL
-              value: "jdbc:postgresql://ep-misty-morning-a9ftkdrx-pooler.gwc.azure.neon.tech/demodb?sslmode=require&channelBinding=require"
+              value: "jdbc:postgresql://postgres:5432/demodb"
             - name: DB_USERNAME
-              value: "neondb_owner"
+              value: "postgres"
             - name: DB_PASSWORD
-              value: "npg_CV2tTx4ElFhf"
+              value: "postgres"
             - name: SERVER_PORT
               value: "8081"
