@@ -22,7 +22,7 @@ public class KafkaService {
 
     //metodo per l'invio del messaggio (conterrà la stateTable)
     public void sendMessage(NotifyDTO notifyDTO) {
-        kafkaTemplate.send("event", "sendEvent", notifyDTO)
+        kafkaTemplate.send("event", "sendEvent", notifyDTO)  //la key è sendEvent, mentre l'oggetto da inviare è NotifyDTO
                 .whenComplete((result, ex) -> {  //result contiene i dettagli del messaggio inviato con successo
                     if (ex == null) {              //se ex è nulla, tutto ok
                         logger.info("Messaggio Kafka inviato correttamente");
