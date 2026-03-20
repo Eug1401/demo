@@ -49,12 +49,23 @@ public class StatusObjectService {
         StatusObject SO = statusObjectMapper.toEntity(statusObjectDTO);
 
 
-        //salvataggio su DB
-        try {
-            statusObjectRepository.save(SO);
-        } catch (Exception e) {
-            logger.error("Errore nell'aggiunta dell'elemento", e);
-            throw new SaveException("Errore nell'aggiunta dell'elemento", e);
+        if(!statusObjectRepository.existsById(SO.getCodiceIdentificativo()))
+        {
+
+            //salvataggio su DB
+            try {
+                statusObjectRepository.save(SO);
+            } catch (Exception e) {
+                logger.error("Errore nell'aggiunta dell'elemento", e);
+                throw new SaveException("Errore nell'aggiunta dell'elemento", e);
+            }
+
+        }
+        else {
+
+            logger.info("Errore nell'inserimento, chiave primaria già presente, riprovare");
+            return new NegativeEsitDTO("Chiave primaria già presente nel DB, riprovare");
+
         }
 
 
@@ -98,10 +109,12 @@ public class StatusObjectService {
                 throw new SaveException("Errore nell'aggiornamento dell'elemento", e);
             }
 
+            NotifyDTO notify = new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.UPDATE, LocalDateTime.now());
+
             //invio notifica al feign client
             try {
                 logger.info("Invio notifica http al feign client in corso... (EVENTO UPDATE)");
-                demoClient.sendNotify(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.UPDATE, LocalDateTime.now()));  //invio notifica tramite http request al feign client
+                demoClient.sendNotify(notify);  //invio notifica tramite http request al feign client
                 logger.info("Ripresa attività del servizio demo dopo invio della notifica al feign client. (EVENTO UPDATE)");
             }  catch (FeignException e) {
                 logger.error("Errore nella chiamata al feign", e);
@@ -109,7 +122,7 @@ public class StatusObjectService {
 
             //invio messaggio al listener
             logger.info("Invio messaggio al listener in corso... (EVENTO UPDATE)");
-            kafkaService.sendMessage(new NotifyDTO(SO.getCodiceIdentificativo(), Operazione.UPDATE, LocalDateTime.now()));  //invio messaggio tramite kafka al listener
+            kafkaService.sendMessage(notify);  //invio messaggio tramite kafka al listener
 
             logger.info("Ripresa attività del servizio demo dopo invio del messaggio kafka al listener. (EVENTO UPDATE)");
 
