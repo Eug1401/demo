@@ -48,9 +48,10 @@ public class CheckService {
 
     public EsitDTO addMessage(PostIncomingMessageDTO postIncomingMessageDTO) {
 
+        //avrà id null
         IncomingMessage IM = incomingMessageMapper.toIncomingMessage(postIncomingMessageDTO);
         try {
-            objectRepository.save(IM);
+            objectRepository.save(IM);  //l'id è auto-generato, quindi il campo verrà riempito dal DB
         } catch (Exception e) {
             logger.error("Errore nell'aggiunta dell'elemento", e);
             throw new SaveException("Errore nell'aggiunta dell'elemento", e);
