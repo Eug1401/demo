@@ -35,10 +35,16 @@ public class StatusObjectScheduler {
     public void consonantStatusObjectScheduler() {
         System.out.println("Ricerca degli StatusObject che iniziano per consonante in corso...");
         List<StatusObject> objects = statusObjectRepository.findByNomeStartingWithConsonant();
-        objects
-                .forEach(x -> {
-                    logger.info("NOME: {}", statusObjectMapper.toResponseStatusObject(x).getNome());  //logger
-                });
+
+        if (objects.isEmpty()) { logger.info("Al momento non sono presenti oggetti che iniziano con consonante nel DB"); }
+
+
+        else {
+            objects
+                    .forEach(x -> {
+                        logger.info("NOME: {}", statusObjectMapper.toResponseStatusObject(x).getNome());  //logger
+                    });
+        }
     }
 
     //cron expressions permettono di essere più precisi. In particolare permette di specificare esatti istanti temporali.
