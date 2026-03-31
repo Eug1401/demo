@@ -19,7 +19,6 @@ public class QuartzConfig {
     public JobDetail printJobDetail() { //ritorna un oggetto JobDeatail (è l’oggetto che descrive un job, cioè che cosa deve essere eseguito)
         return newJob(PrintJob.class)   //la classe che deve essere eseguita à PrintJob
                 .withIdentity("printJob", "demo")
-                .usingJobData("nome", "prova stampa Quartz")  //imposta un pametro nella JobMapData (presenta una serie di (chiave, valore))
                 .storeDurably()  //il job deve essere mantenuto in memoria
                 .build();
     }
@@ -32,7 +31,7 @@ public class QuartzConfig {
                 .startNow()  //inizia da ora
                 .withSchedule(
                         simpleSchedule()  //schedulazione semplice ad intervalli regolari
-                                .withIntervalInSeconds(15)  //ogni 15 secondi
+                                .withIntervalInSeconds(30)  //ogni 15 secondi
                                 .repeatForever()
                 ).build();
     }
